@@ -1,11 +1,11 @@
 package controller.book;
 
-import static controller.book.AddNewBookServlet.LOGGER;
 import dao.BookDAO;
 import dao.CategoryDAO;
 import entity.Book;
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -145,9 +145,9 @@ public class UpdateBookServlet extends HttpServlet {
                 pass = false;
                 errors.setQuantityError("Quantity must be >= 1");
             }
-            if (!BookValidator.validatePrice(Integer.parseInt(price))) {
+            if (!BookValidator.validatePrice(price)) {
                 pass = false;
-                errors.setPriceError("Price must be positive");
+                errors.setPriceError("Price must be Decimal");
             }
 
             if (!pass) {
@@ -160,7 +160,7 @@ public class UpdateBookServlet extends HttpServlet {
                 selectedBook.setDescription(description);
                 selectedBook.setCategory(categoryDAO.findCategory(Integer.parseInt(categoryId)));
                 selectedBook.setQuantity(Integer.parseInt(quantity));
-                selectedBook.setPrice(Integer.parseInt(price));
+                selectedBook.setPrice(new BigDecimal(price));
                 if (filename != null && !filename.isEmpty()) {
                     selectedBook.setImg(filename);
                 }

@@ -10,9 +10,13 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -24,40 +28,38 @@ import javax.persistence.TemporalType;
 @Entity
 @Table(catalog = "lab02", schema = "dbo")
 @NamedQueries({
-    @NamedQuery(name = "Category.findAll", query = "SELECT c FROM Category c"),
-    @NamedQuery(name = "Category.findById", query = "SELECT c FROM Category c WHERE c.id = :id"),
-    @NamedQuery(name = "Category.findByName", query = "SELECT c FROM Category c WHERE c.name = :name"),
-    @NamedQuery(name = "Category.findByCreateAt", query = "SELECT c FROM Category c WHERE c.createAt = :createAt"),
-    @NamedQuery(name = "Category.findByUpdateAt", query = "SELECT c FROM Category c WHERE c.updateAt = :updateAt")})
-public class Category implements Serializable {
+    @NamedQuery(name = "Checkout.findAll", query = "SELECT c FROM Checkout c"),
+    @NamedQuery(name = "Checkout.findById", query = "SELECT c FROM Checkout c WHERE c.id = :id"),
+    @NamedQuery(name = "Checkout.findByCreateAt", query = "SELECT c FROM Checkout c WHERE c.createAt = :createAt"),
+    @NamedQuery(name = "Checkout.findByUpdateAt", query = "SELECT c FROM Checkout c WHERE c.updateAt = :updateAt")})
+public class Checkout implements Serializable {
+
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(nullable = false)
     private Integer id;
-    @Basic(optional = false)
-    @Column(nullable = false, length = 50)
-    private String name;
     @Column(name = "create_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createAt;
     @Column(name = "update_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date updateAt;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "category")
-    private List<Book> bookList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "checkout")
+    private List<CheckoutBook> checkoutBookList;
+    @JoinColumn(name = "discount_id", referencedColumnName = "id")
+    @ManyToOne
+    private Discount discount;
+    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
+    @ManyToOne(optional = false)
+    private User user;
 
-    public Category() {
+    public Checkout() {
     }
 
-    public Category(Integer id) {
+    public Checkout(Integer id) {
         this.id = id;
-    }
-
-    public Category(Integer id, String name) {
-        this.id = id;
-        this.name = name;
     }
 
     public Integer getId() {
@@ -66,14 +68,6 @@ public class Category implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public Date getCreateAt() {
@@ -92,12 +86,28 @@ public class Category implements Serializable {
         this.updateAt = updateAt;
     }
 
-    public List<Book> getBookList() {
-        return bookList;
+    public List<CheckoutBook> getCheckoutBookList() {
+        return checkoutBookList;
     }
 
-    public void setBookList(List<Book> bookList) {
-        this.bookList = bookList;
+    public void setCheckoutBookList(List<CheckoutBook> checkoutBookList) {
+        this.checkoutBookList = checkoutBookList;
+    }
+
+    public Discount getDiscount() {
+        return discount;
+    }
+
+    public void setDiscount(Discount discount) {
+        this.discount = discount;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     @Override
@@ -110,10 +120,10 @@ public class Category implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Category)) {
+        if (!(object instanceof Checkout)) {
             return false;
         }
-        Category other = (Category) object;
+        Checkout other = (Checkout) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -122,7 +132,17 @@ public class Category implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.Category[ id=" + id + " ]";
+        return "entity.test.Checkout[ id=" + id + " ]";
     }
 
+    @PrePersist
+    void createAt() {
+        this.createAt = new Date();
+        this.updateAt = new Date();
+    }
+
+    @PreUpdate
+    void updateAt() {
+        this.updateAt = new Date();
+    }
 }

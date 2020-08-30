@@ -1,9 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package entity;
 
 import java.io.Serializable;
@@ -31,10 +25,8 @@ import javax.persistence.Table;
     @NamedQuery(name = "ShoppingBook.findById", query = "SELECT s FROM ShoppingBook s WHERE s.id = :id"),
     @NamedQuery(name = "ShoppingBook.findByStatus", query = "SELECT s FROM ShoppingBook s WHERE s.status = :status")})
 public class ShoppingBook implements Serializable {
+
     private static final long serialVersionUID = 1L;
-    @Basic(optional = false)
-    @Column(nullable = false)
-    private int quantity;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -42,7 +34,10 @@ public class ShoppingBook implements Serializable {
     private Integer id;
     @Basic(optional = false)
     @Column(nullable = false)
-    private boolean status;
+    private int quantity = 1;
+    @Basic(optional = false)
+    @Column(nullable = false)
+    private boolean status = true;
     @JoinColumn(name = "book_id", referencedColumnName = "id", nullable = false)
     @ManyToOne(optional = false)
     private Book book;
@@ -125,7 +120,7 @@ public class ShoppingBook implements Serializable {
 
     @Override
     public String toString() {
-        return "entity.test.ShoppingBook[ id=" + id + " ]";
+        return "ShoppingBook{" + "id=" + id + ", quantity=" + quantity + ", status=" + status + ", book=" + book + ", shopping=" + shopping + '}';
     }
 
 }

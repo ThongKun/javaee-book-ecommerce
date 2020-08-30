@@ -1,11 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package entity;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
@@ -63,7 +59,10 @@ public class Book implements Serializable {
     @Basic(optional = false)
     @Column(nullable = false)
     private int quantity;
-    private Integer price;
+    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
+    @Basic(optional = false)
+    @Column(nullable = false, precision = 18, scale = 2)
+    private BigDecimal price;
     @Basic(optional = false)
     @Column(nullable = false, length = 55)
     private String author;
@@ -81,6 +80,8 @@ public class Book implements Serializable {
     private Category category;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "book")
     private List<ShoppingBook> shoppingBookList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "book")
+    private List<CheckoutBook> checkoutBookList;
 
     public Book() {
     }
@@ -138,11 +139,11 @@ public class Book implements Serializable {
         this.quantity = quantity;
     }
 
-    public Integer getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(Integer price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 
@@ -193,7 +194,15 @@ public class Book implements Serializable {
     public void setShoppingBookList(List<ShoppingBook> shoppingBookList) {
         this.shoppingBookList = shoppingBookList;
     }
-    
+
+    public List<CheckoutBook> getCheckoutBookList() {
+        return checkoutBookList;
+    }
+
+    public void setCheckoutBookList(List<CheckoutBook> checkoutBookList) {
+        this.checkoutBookList = checkoutBookList;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;

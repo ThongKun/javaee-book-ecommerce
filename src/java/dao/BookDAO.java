@@ -14,6 +14,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 import org.apache.log4j.Logger;
+import org.eclipse.persistence.jpa.JpaEntityManager;
 
 /**
  *
@@ -98,6 +99,7 @@ public class BookDAO implements Serializable {
      */
     public List<Book> findBooks(String searchValue, int miniMoney, int categoryId) {
         EntityManager em = emf.createEntityManager();
+        ((JpaEntityManager) em.getDelegate()).getServerSession().getIdentityMapAccessor().invalidateAll();
         List<Book> result = null;
 
         CategoryDAO categoryDAO = new CategoryDAO();

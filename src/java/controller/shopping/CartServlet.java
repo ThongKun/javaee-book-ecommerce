@@ -1,5 +1,10 @@
 package controller.shopping;
 
+import dao.DiscountDAO;
+import dao.ShoppingDAO;
+import entity.Discount;
+import entity.Shopping;
+import entity.User;
 import java.io.IOException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -23,6 +28,12 @@ public class CartServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         LOGGER.info("Go Get Request");
+        User user = (User)request.getSession(false).getAttribute("userinfo");
+        ShoppingDAO shoppingDAO = new ShoppingDAO();
+        Shopping userShoping = shoppingDAO.findShopping(user);
+        
+        request.setAttribute("SHOPPING", userShoping);
+        
         RequestDispatcher rd = request.getRequestDispatcher(URLConstants.CART_PAGE);
         rd.forward(request, response);
     }
@@ -31,8 +42,17 @@ public class CartServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         LOGGER.info("Go Post Request");
-        RequestDispatcher rd = request.getRequestDispatcher(URLConstants.CART_PAGE);
-        rd.forward(request, response);
+        //reset
+        request.getSession().removeAttribute("DISCOUNT");
+        
+        String couponCode = request.getParameter("coupon-code");
+        DiscountDAO discountDAO = new DiscountDAO();
+        Discount discount = discountDAO.findDiscount(couponCode);
+        if (discount != null) {
+            request.getSession(true).setAttribute("DISCOUNT", discount);
+        }
+        
+        response.sendRedirect(URLConstants.CART_REQUEST);
     }
 
     @Override

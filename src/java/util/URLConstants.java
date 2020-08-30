@@ -23,6 +23,10 @@ public class URLConstants {
     public static final String SEARCH_BOOK_REQUEST = "search-book";
     public static final String CART_REQUEST = "cart";
     public static final String ADD_TO_CART_REQUEST = "add-to-cart";
+    public static final String INCREASE_CART_ITEM_REQUEST = "increase-cart-item";
+    public static final String DECREASE_CART_ITEM_REQUEST = "decrease-cart-item";
+    public static final String REMOVE_CART_ITEM_REQUEST = "remove-cart-item";
+    public static final String CHECKOUT_REQUEST = "checkout";
     /*admin priviledge*/
     public static final String SIGNUP_REQUEST = "signup";
     public static final String CHANGE_BOOK_STATUS_REQUEST = "change-book-status";

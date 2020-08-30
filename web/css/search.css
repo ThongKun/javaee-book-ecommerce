@@ -206,13 +206,13 @@ td:nth-last-child(3) {
     width: 7rem;
 }
 
-td:last-child {
+.search td:last-child {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
 }
-td:last-child button {
+.search td:last-child button {
     margin: 5px 5px !important;
 }
 
@@ -221,4 +221,23 @@ td:last-child button {
     padding-bottom: 3px;
     width: 36px;
     height: 30px;
+}
+
+.checkout {
+    flex-grow: 2;
+}
+
+.td--total {
+    background: pink;
+    font-size: 18px;
+    font-weight: 600;
+    color: #712f1a;
+}
+
+.btn-checkout {
+    color: blue;
+    margin: 0px !important;
+    font-weight: 700;
+    font-size: 24px;
+    width: 100%;
 }

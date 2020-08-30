@@ -74,7 +74,7 @@
             <div class="user-table">
                 <c:choose>
                     <c:when test="${not empty requestScope.books}">
-                        <table border="1">
+                        <table border="1" class="search">
                             <thead>
                                 <tr>
                                     <th>No.</th>
@@ -102,23 +102,25 @@
                                         <td>${item.category.name}</td>
                                         <td>${item.status}</td>
                                         <td>
-                                            <button type="submit">
-                                                <a href="update-book?id=${item.id}" style="color:blue">Update</a>
-                                            </button>
-                                            <c:choose>
-                                                <c:when test="${item.status}">
-                                                    <button>
-                                                        <a href="change-book-status?id=${item.id}" style="color:#6c6a6c">Ban</a>
-                                                    </button> 
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <button>
-                                                        <a href="change-book-status?id=${item.id}" style="color:#3cb027">Activate</a>
-                                                    </button> 
-                                                </c:otherwise>
-                                            </c:choose>
+                                            <c:if test="${sessionScope.userinfo.id eq 1}">
+                                                <button type="submit">
+                                                    <a href="update-book?id=${item.id}" style="color:blue">Update</a>
+                                                </button>
+                                                <c:choose>
+                                                    <c:when test="${item.status}">
+                                                        <button>
+                                                            <a href="change-book-status?id=${item.id}" style="color:#6c6a6c">Ban</a>
+                                                        </button> 
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <button>
+                                                            <a href="change-book-status?id=${item.id}" style="color:#3cb027">Activate</a>
+                                                        </button> 
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </c:if>
                                             <button class="btn--cart" title="add to cart">
-                                                <a href="add-to-cart?id=${item.id}" style="color:#3cb027">🛒</a>
+                                                <a href="add-to-cart?bookId=${item.id}" style="color:#3cb027">🛒</a>
                                             </button> 
                                         </td>
                                     </tr>

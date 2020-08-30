@@ -37,9 +37,127 @@
         </div>
 
         <h1 class="title">Your Cart</h1>
-
-
         <hr/>
 
+        <!--Table Cart-->
+        <div class="user-container">
+            <c:choose>
+                <c:when test="${not empty requestScope.SHOPPING.shoppingBookList}">
+                    <div class="user-table">
+
+                        <table border="1">
+                            <thead>
+                                <tr>
+                                    <th>No.</th>
+                                    <th>Photo</th>
+                                    <th>Book Name</th>
+                                    <th>Quantity</th>
+                                    <th>Price</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <c:set var="total" value="${0}"/>
+                                <c:forEach items="${requestScope.SHOPPING.shoppingBookList}" var="item" varStatus="counter">
+                                    <tr>
+                                        <td>${counter.count}</td>
+                                        <td><img src="images/${item.book.img}" width="80" height="auto"  alt="${item.book.title}"/></td>
+                                        <td>${item.book.title}</td>
+                                        <td>
+                                            <c:if test="${item.book.quantity > item.quantity}">
+                                                <a href="increase-cart-item?shoppingBookId=${item.id}" title="Increase">
+                                                    ⬆️
+                                                </a>
+                                            </c:if>
+                                            ${item.quantity}
+                                            <a href="decrease-cart-item?shoppingBookId=${item.id}" title="Decrease">
+                                                ⬇️
+                                            </a>
+                                        </td>
+                                        <td>
+                                            ${item.quantity * item.book.price}$
+                                            <c:set var="total" value="${total + item.quantity * item.book.price}" />
+                                        </td>
+                                        <td>
+                                            <a title="remove item" onclick="return confirmToRemove(${item.id})">❌</a>
+                                        </td>
+                                    </tr>          
+                                </c:forEach>
+
+                                <tr style="font-weight: bold;color: #e15018;">
+                                    <td colspan="4">
+                                        Total
+                                    </td>
+                                    <td> 
+                                        ${total}$
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                    <div class="checkout">
+                        <table border="1">
+                            <tbody>
+                                <tr>
+                                    <td colspan="2" style="background: pink;" class="td--total">
+                                        Total:  ${total * (100 - sessionScope.DISCOUNT.offer)/100}$
+                                        <c:if test="${not empty sessionScope.DISCOUNT}"> 
+                                            <span>(-${sessionScope.DISCOUNT.offer}%)</span>
+                                        </c:if>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <form action="cart" method="post">
+                                            <input style="height:2em" type="text" placeholder="Enter Discount" name="coupon-code" value="${sessionScope.DISCOUNT.code}"/>
+                                            <button style="height:2em">Enter</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                <c:if test="${empty sessionScope.DISCOUNT}">
+                                    <tr>
+                                        <td style="color: red">Not Found Code</td>
+                                    </tr>    
+                                </c:if>
+                                <tr>
+                                    <td colspan="2">
+                                        <button class="btn-checkout" onclick="return confirmToPay()">
+                                            Submit To Pay
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </c:when>
+                <c:otherwise>
+                    <h3 style="margin:auto">
+                        Your Cart Is Empty
+                    </h3>
+                </c:otherwise>
+            </c:choose>  
+        </div>
+        <script>
+                    function confirmToRemove(id) {
+                    let pass = false;
+                            if (id) {
+                    pass = confirm("Do you really want to remove this item ? ")
+                    }
+                    if (pass) {
+                    window.location.href = "remove-cart-item?shoppingBookId=" + id;
+                    }
+                    return pass;
+                    }
+
+            function confirmToPay() {
+            let pass = false;
+                    pass = confirm("Are you sure to pay the item(s)?");
+                    if (pass) {
+            window.location.href = "checkout";
+            }
+            return pass;
+            }
+        </script>
     </body>
 </html>

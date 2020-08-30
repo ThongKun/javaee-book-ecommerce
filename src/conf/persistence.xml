@@ -18,6 +18,9 @@
     <class>entity.test.Book_1</class>
     <class>entity.test.Role_1</class>
     <class>entity.test.Category_1</class>
+    <class>entity.test.CheckoutBook</class>
+    <class>entity.test.Checkout</class>
+    <class>entity.test.Sysdiagrams</class>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <properties>
       <property name="javax.persistence.jdbc.url" value="jdbc:sqlserver://localhost\THONGLVSE61916:1433;databaseName=lab02"/>

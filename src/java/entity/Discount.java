@@ -1,22 +1,17 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package entity;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
@@ -36,7 +31,7 @@ import javax.persistence.TemporalType;
     @NamedQuery(name = "Discount.findByIsUsed", query = "SELECT d FROM Discount d WHERE d.isUsed = :isUsed"),
     @NamedQuery(name = "Discount.findByStatus", query = "SELECT d FROM Discount d WHERE d.status = :status"),
     @NamedQuery(name = "Discount.findByCreateAt", query = "SELECT d FROM Discount d WHERE d.createAt = :createAt"),
-    @NamedQuery(name = "Discount.findByUpdateAt", query = "SELECT d FROM Discount d WHERE d.updateAt = :updateAt")})
+    @NamedQuery(name = "Discount.findByCode", query = "SELECT d FROM Discount d WHERE d.code = :code")})
 public class Discount implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -60,9 +55,11 @@ public class Discount implements Serializable {
     @Column(name = "update_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date updateAt;
-    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
-    @ManyToOne(optional = false)
-    private User user;
+    @OneToMany(mappedBy = "discount")
+    private List<Checkout> checkoutList;
+    @Basic(optional = false)
+    @Column(nullable = false, length = 255)
+    private String code;
 
     public Discount() {
     }
@@ -126,19 +123,27 @@ public class Discount implements Serializable {
         this.updateAt = updateAt;
     }
 
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
     @Override
     public int hashCode() {
         int hash = 0;
         hash += (id != null ? id.hashCode() : 0);
         return hash;
+    }
+
+    public List<Checkout> getCheckoutList() {
+        return checkoutList;
+    }
+
+    public void setCheckoutList(List<Checkout> checkoutList) {
+        this.checkoutList = checkoutList;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 
     @Override

@@ -13,14 +13,13 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.apache.log4j.Logger;
 import util.URLConstants;
 
 /**
  *
- * @author HOME
+ * @author ThongLV
  */
 public class MainFilter implements Filter {
 
@@ -36,12 +35,22 @@ public class MainFilter implements Filter {
         URLConstants.UPDATE_BOOK_REQUEST,
         URLConstants.UPDATE_BOOK_PAGE,
         URLConstants.CART_PAGE,
-        URLConstants.CART_REQUEST};
+        URLConstants.CART_REQUEST,
+        URLConstants.ADD_TO_CART_REQUEST,
+        URLConstants.INCREASE_CART_ITEM_REQUEST,
+        URLConstants.DECREASE_CART_ITEM_REQUEST,
+        URLConstants.REMOVE_CART_ITEM_REQUEST,
+        URLConstants.CHECKOUT_REQUEST};
     private final String[] LEGAL_URL_FOR_OTHER_USER = {
         URLConstants.SEARCH_BOOK_PAGE,
         URLConstants.LOG_OUT,
         URLConstants.CART_PAGE,
-        URLConstants.CART_REQUEST};
+        URLConstants.CART_REQUEST,
+        URLConstants.ADD_TO_CART_REQUEST,
+        URLConstants.INCREASE_CART_ITEM_REQUEST,
+        URLConstants.DECREASE_CART_ITEM_REQUEST,
+        URLConstants.REMOVE_CART_ITEM_REQUEST,
+        URLConstants.CHECKOUT_REQUEST};
     static final Logger LOGGER = Logger.getLogger(MainFilter.class);
 
     private static final boolean debug = true;
@@ -191,15 +200,5 @@ public class MainFilter implements Filter {
 
     public void log(String msg) {
         filterConfig.getServletContext().log(msg);
-    }
-
-    private void checkLogoutRequest(ServletRequest request, ServletResponse response, String URI, HttpSession session)
-            throws ServletException, IOException {
-        //Logout -> xóa hết session
-        if (URI.endsWith(URLConstants.LOG_OUT)) {
-            session.removeAttribute("userinfo");
-            HttpServletResponse httpresponse = (HttpServletResponse) response;
-            httpresponse.sendRedirect(URLConstants.LOGIN_PAGE);
-        }
     }
 }

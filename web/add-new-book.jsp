@@ -56,7 +56,7 @@
             <c:if test="${not empty requestScope.errors.priceError}">
                 <p style="color:red">${requestScope.errors.priceError}</p>
             </c:if>
-            Price($) <input type="number" name="price" value="${requestScope.price}" /><br/>
+                Price($) <input type="text" name="price" value="${requestScope.price}" placeholder="21.33$" /><br/>
 
             Category<select name="categoryId">
                 <c:forEach items="${requestScope.CATEGORIES}" var="item">

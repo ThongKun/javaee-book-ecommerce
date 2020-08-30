@@ -20,8 +20,8 @@ public class BookValidator {
         return quantity >= 1;
     }
 
-    public static boolean validatePrice(int price) {
-        return price > 0;
+    public static boolean validatePrice(String price) {
+        return price.matches("^\\d*\\.\\d+|\\d+\\.\\d*$");
     }
 
     public static boolean validateAuthor(String author) {
