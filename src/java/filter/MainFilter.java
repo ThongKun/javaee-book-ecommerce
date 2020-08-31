@@ -34,13 +34,9 @@ public class MainFilter implements Filter {
         URLConstants.ADD_NEW_BOOK_REQUEST,
         URLConstants.UPDATE_BOOK_REQUEST,
         URLConstants.UPDATE_BOOK_PAGE,
-        URLConstants.CART_PAGE,
-        URLConstants.CART_REQUEST,
-        URLConstants.ADD_TO_CART_REQUEST,
-        URLConstants.INCREASE_CART_ITEM_REQUEST,
-        URLConstants.DECREASE_CART_ITEM_REQUEST,
-        URLConstants.REMOVE_CART_ITEM_REQUEST,
-        URLConstants.CHECKOUT_REQUEST};
+        URLConstants.GENERATE_DISCOUNT_CODE_REQUEST,
+        URLConstants.GENERATE_DISCOUNT_CODE_PAGE
+    };
     private final String[] LEGAL_URL_FOR_OTHER_USER = {
         URLConstants.SEARCH_BOOK_PAGE,
         URLConstants.LOG_OUT,
@@ -50,7 +46,10 @@ public class MainFilter implements Filter {
         URLConstants.INCREASE_CART_ITEM_REQUEST,
         URLConstants.DECREASE_CART_ITEM_REQUEST,
         URLConstants.REMOVE_CART_ITEM_REQUEST,
-        URLConstants.CHECKOUT_REQUEST};
+        URLConstants.CHECKOUT_REQUEST,
+        URLConstants.SHOPPING_HISTORY_REQUEST,
+        URLConstants.SHOPPING_HISTORY_PAGE
+    };
     static final Logger LOGGER = Logger.getLogger(MainFilter.class);
 
     private static final boolean debug = true;
@@ -144,8 +143,11 @@ public class MainFilter implements Filter {
             if (isSignupRequest) {
                 RequestDispatcher dispatcher = request.getRequestDispatcher(URLConstants.SIGNUP_REQUEST);
                 dispatcher.forward(request, response);
-            } else {
+            } else if (isLoginRequest) {
                 RequestDispatcher dispatcher = request.getRequestDispatcher(URLConstants.LOGIN_REQUEST);
+                dispatcher.forward(request, response);
+            } else {
+                RequestDispatcher dispatcher = request.getRequestDispatcher(URLConstants.SEARCH_BOOK_REQUEST);
                 dispatcher.forward(request, response);
             }
         }

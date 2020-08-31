@@ -1,6 +1,7 @@
 package dao;
 
 import entity.Shopping;
+import entity.ShoppingBook;
 import entity.User;
 import java.io.Serializable;
 import javax.persistence.EntityManager;
@@ -35,7 +36,7 @@ public class ShoppingDAO implements Serializable {
             em.close();
         }
     }
-
+    
     public Shopping findShopping(User user) {
         EntityManager em = emf.createEntityManager();
         ((JpaEntityManager) em.getDelegate()).getServerSession().getIdentityMapAccessor().invalidateAll();
@@ -49,6 +50,13 @@ public class ShoppingDAO implements Serializable {
             query.setParameter("user", user);
 
             result = (Shopping) query.getResultList().get(0);
+            
+            ShoppingBookDAO sbDAO = new ShoppingBookDAO();
+            for (ShoppingBook item : result.getShoppingBookList()) {
+                if (!item.getBook().getStatus() || item.getBook().getQuantity() < 1) {
+                    sbDAO.removeCartItem(item.getId());
+                }
+            }
         } catch (Exception e) {
             LOGGER.error("Exception: " + e);
         } finally {

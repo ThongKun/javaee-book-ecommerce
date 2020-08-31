@@ -47,10 +47,10 @@ public class AddToCartServlet extends HttpServlet {
             //check lai
             ShoppingBookDAO sbDAO = new ShoppingBookDAO();
 
-            if (!sbDAO.isBookExistingInTheCart(shopping.getId(), Integer.parseInt(bookId))) {
-                BookDAO bookDAO = new BookDAO();
-                Book selectedBook = bookDAO.findBookById(Integer.parseInt(bookId));
-
+            BookDAO bookDAO = new BookDAO();
+            Book selectedBook = bookDAO.findBookById(Integer.parseInt(bookId));
+            if (!sbDAO.isBookExistingInTheCart(shopping.getId(), Integer.parseInt(bookId)) && selectedBook.getStatus() && selectedBook.getQuantity() >= 1) {
+                System.out.println("SELECTED BOOK : " + selectedBook.getQuantity());
                 ShoppingBook shoppingBook = new ShoppingBook();
                 shoppingBook.setShopping(shopping);
                 shoppingBook.setBook(selectedBook);

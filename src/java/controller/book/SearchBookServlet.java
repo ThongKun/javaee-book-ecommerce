@@ -2,6 +2,7 @@ package controller.book;
 
 import dao.BookDAO;
 import dao.CategoryDAO;
+import entity.User;
 import java.io.IOException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -28,15 +29,21 @@ public class SearchBookServlet extends HttpServlet {
         String searchKey = request.getParameter("s"); //query parameter s: search
         String minimumMoney = request.getParameter("minimumMoney");
         String categoryId = request.getParameter("categoryId");
-        
+
         searchKey = searchKey == null ? "" : searchKey;
         minimumMoney = (minimumMoney == null || minimumMoney.isEmpty() || Integer.parseInt(minimumMoney) < 1) ? "1" : minimumMoney;
         categoryId = (categoryId == null || categoryId.isEmpty() || Integer.parseInt(categoryId) < 1) ? "0" : categoryId;
 
         // Business Logic
         BookDAO bookDAO = new BookDAO();
-        request.setAttribute("books", bookDAO.findBooks(searchKey, Integer.parseInt(minimumMoney), Integer.parseInt(categoryId)));
-        
+
+        User user = (User) request.getSession().getAttribute("userinfo");
+        if (user != null && user.getId() == 1) {
+            request.setAttribute("books", bookDAO.findBooks(searchKey, Integer.parseInt(minimumMoney), Integer.parseInt(categoryId)));
+        } else {
+            request.setAttribute("books", bookDAO.findBooks(true, searchKey, Integer.parseInt(minimumMoney), Integer.parseInt(categoryId)));
+        }
+
         CategoryDAO categoryDAO = new CategoryDAO();
         request.setAttribute("CATEGORIES", categoryDAO.findCategories());
 

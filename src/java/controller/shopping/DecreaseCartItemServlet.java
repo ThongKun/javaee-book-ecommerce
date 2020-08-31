@@ -1,6 +1,7 @@
 package controller.shopping;
 
 import dao.ShoppingBookDAO;
+import entity.ShoppingBook;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -27,13 +28,17 @@ public class DecreaseCartItemServlet extends HttpServlet {
 
         ShoppingBookDAO shoppingBookDAO = new ShoppingBookDAO();
 
-        if (!shoppingBookId.matches("\\d{1,}") || shoppingBookDAO.findOne(Integer.parseInt(shoppingBookId)) == null) {
+        ShoppingBook shoppingBook = shoppingBookDAO.findOne(Integer.parseInt(shoppingBookId));
+        if (!shoppingBookId.matches("\\d{1,}") || shoppingBook == null) {
             response.sendRedirect(URLConstants.SEARCH_BOOK_REQUEST);
         } else {
-            shoppingBookDAO.increaseDecreaseCartItem(Integer.parseInt(shoppingBookId), -1);
+            if (!shoppingBook.getBook().getStatus() || shoppingBook.getBook().getQuantity() < 1) {
+                shoppingBookDAO.removeCartItem(Integer.parseInt(shoppingBookId));
+            } else {
+                shoppingBookDAO.increaseDecreaseCartItem(Integer.parseInt(shoppingBookId), -1);
+            }
             response.sendRedirect(URLConstants.CART_REQUEST);
         }
-
     }
 
     @Override

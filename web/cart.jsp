@@ -1,9 +1,3 @@
-<%-- 
-    Document   : search-1.jsp
-    Created on : Aug 26, 2020, 12:13:40 PM
-    Author     : HOME
---%>
-
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -24,27 +18,30 @@
         <div class="nav-bar">
             <span>${sessionScope.userinfo.name} > Role: ${sessionScope.userinfo.role.name} </span>
             <ul class="menu">
-                <li><a href="view-promotion-history">Shopping History</a></li>
-                    <c:if test="${sessionScope.userinfo.role.name == 'admin'}">
-                    <li>
-                        <a href="${pageContext.request.contextPath}/">
-                            Search
-                        </a>
-                    </li>
-                </c:if>
+                <li>
+                    <a href="shopping-history">Shopping History</a>
+                </li>
+                <li>
+                    <a href="${pageContext.request.contextPath}/">
+                        Search
+                    </a>
+                </li>
                 <li><a href="logout">Log Out</a></li>
             </ul>
         </div>
 
         <h1 class="title">Your Cart</h1>
         <hr/>
+        
+        <c:if test="${not emptyrequestScope.IMPORTANT_ERROR}">
+            <h3 style="color: red; text-align: center">${requestScope.IMPORTANT_ERROR}</h3>
+        </c:if>
 
         <!--Table Cart-->
         <div class="user-container">
             <c:choose>
                 <c:when test="${not empty requestScope.SHOPPING.shoppingBookList}">
                     <div class="user-table">
-
                         <table border="1">
                             <thead>
                                 <tr>

@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package dao;
 
 import entity.Book;
@@ -45,6 +40,7 @@ public class BookDAO implements Serializable {
 
     public Book findBookById(int bookId) {
         EntityManager em = emf.createEntityManager();
+        ((JpaEntityManager) em.getDelegate()).getServerSession().getIdentityMapAccessor().invalidateAll();
         try {
             Query query = em.createNamedQuery("Book.findById");
             query.setParameter("id", bookId);
@@ -130,6 +126,41 @@ public class BookDAO implements Serializable {
         return result;
     }
 
+    public List<Book> findBooks(boolean isBookAvailable, String searchValue, int miniMoney, int categoryId) {
+        EntityManager em = emf.createEntityManager();
+        ((JpaEntityManager) em.getDelegate()).getServerSession().getIdentityMapAccessor().invalidateAll();
+        List<Book> result = null;
+
+        CategoryDAO categoryDAO = new CategoryDAO();
+
+        try {
+            String jpql = "SELECT b from Book b "
+                    + "WHERE b.quantity > 0 "
+                    + "AND b.status = :isBookAvailable "
+                    + "AND b.title LIKE :searchValue "
+                    + "AND b.price >= :miniMoney ";
+            Category category = categoryDAO.findCategory(categoryId);
+            LOGGER.info(category);
+            if (category != null) {
+                jpql += "AND b.category = :category";
+            }
+
+            Query query = em.createQuery(jpql);
+            query.setParameter("isBookAvailable", isBookAvailable);
+            query.setParameter("searchValue", "%" + searchValue + "%");
+            query.setParameter("miniMoney", miniMoney);
+            if (category != null) {
+                query.setParameter("category", category);
+            }
+
+            result = query.getResultList();
+            LOGGER.info("result: " + result);
+        } catch (Exception e) {
+            LOGGER.error("Exception Caught: " + e);
+        }
+        return result;
+    }
+
     public List<Book> findBooks() {
         EntityManager em = emf.createEntityManager();
         List<Book> result = null;
@@ -152,7 +183,7 @@ public class BookDAO implements Serializable {
             Book book = (Book) query.getSingleResult();
 
             em.getTransaction().begin();
-            
+
             book.setTitle(newBook.getTitle());
             book.setAuthor(newBook.getAuthor());
             book.setDescription(newBook.getDescription());
@@ -164,7 +195,7 @@ public class BookDAO implements Serializable {
             em.getTransaction().commit();
         } catch (Exception e) {
             LOGGER.error("Exception: " + e);
-             em.getTransaction().rollback();
+            em.getTransaction().rollback();
         } finally {
             em.close();
         }

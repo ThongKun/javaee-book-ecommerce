@@ -31,6 +31,20 @@ public class ShoppingBookDAO implements Serializable {
         }
     }
 
+    public void update(ShoppingBook object) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.merge(object);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            LOGGER.error("Exception: " + e);
+            em.getTransaction().rollback();
+        } finally {
+            em.close();
+        }
+    }
+
     public ShoppingBook findOne(int id) {
         EntityManager em = emf.createEntityManager();
         ShoppingBook result = null;

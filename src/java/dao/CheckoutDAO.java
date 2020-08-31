@@ -3,11 +3,14 @@ package dao;
 import entity.Checkout;
 import entity.User;
 import java.io.Serializable;
+import java.util.Date;
+import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.Query;
 import org.apache.log4j.Logger;
+import org.eclipse.persistence.jpa.JpaEntityManager;
 
 /**
  *
@@ -31,7 +34,51 @@ public class CheckoutDAO implements Serializable {
             em.close();
         }
     }
+    
+    
+    public List<Checkout> findAllCheckouts(User user){
+         EntityManager em = emf.createEntityManager();
+        ((JpaEntityManager) em.getDelegate()).getServerSession().getIdentityMapAccessor().invalidateAll();
+        List<Checkout> result = null;
+        try {
+            String jpql = "SELECT c FROM Checkout c "
+                    + "WHERE c.user = :user "
+                    + "ORDER BY c.createAt DESC";
+            Query query = em.createQuery(jpql);
+            query.setParameter("user", user);
 
+            result = query.getResultList();
+        } catch (Exception e) {
+            LOGGER.error("Exception: " + e);
+        } finally {
+            em.close();
+        }
+        return result;
+    }
+
+     public List<Checkout> findAllCheckouts(User user, Date from, Date to){
+         EntityManager em = emf.createEntityManager();
+        ((JpaEntityManager) em.getDelegate()).getServerSession().getIdentityMapAccessor().invalidateAll();
+        List<Checkout> result = null;
+        try {
+            String jpql = "SELECT c FROM Checkout c "
+                    + "WHERE c.user = :user "
+                    + "AND c.createAt BETWEEN :from AND :to "
+                    + "ORDER BY c.createAt DESC";
+            Query query = em.createQuery(jpql);
+            query.setParameter("user", user);
+            query.setParameter("from", from);
+            query.setParameter("to", to);
+
+            result = query.getResultList();
+        } catch (Exception e) {
+            LOGGER.error("Exception: " + e);
+        } finally {
+            em.close();
+        }
+        return result;
+    }
+    
     public Checkout findTheLatest(User user) {
         EntityManager em = emf.createEntityManager();
         Checkout result = null;

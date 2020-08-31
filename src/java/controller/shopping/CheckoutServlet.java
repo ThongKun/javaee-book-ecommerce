@@ -4,6 +4,7 @@ import dao.BookDAO;
 import dao.CheckoutBookDAO;
 import dao.CheckoutDAO;
 import dao.DiscountDAO;
+import dao.ShoppingBookDAO;
 import dao.ShoppingDAO;
 import entity.Checkout;
 import entity.CheckoutBook;
@@ -12,6 +13,7 @@ import entity.Shopping;
 import entity.ShoppingBook;
 import entity.User;
 import java.io.IOException;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -50,30 +52,54 @@ public class CheckoutServlet extends HttpServlet {
 
         ShoppingDAO shoppingDAO = new ShoppingDAO();
         Shopping currentShopping = shoppingDAO.findShopping(user);
-        for (ShoppingBook item : currentShopping.getShoppingBookList()) {
-            CheckoutBook oneCheckoutBook = new CheckoutBook();
-            oneCheckoutBook.setCheckout(checkout);
-            oneCheckoutBook.setBook(item.getBook());
-            oneCheckoutBook.setPrice(item.getBook().getPrice());
-            oneCheckoutBook.setQuantity(item.getQuantity());
 
-            checkoutBookDAO.persist(oneCheckoutBook);
-            
-            BookDAO bookDAO = new BookDAO();
-            
-            item.getBook().setQuantity(item.getBook().getQuantity() - item.getQuantity());
-            bookDAO.update(item.getBook());
+        boolean importantCheck = true;
+        for (ShoppingBook item : currentShopping.getShoppingBookList()) {
+            ShoppingBookDAO sbDAO = new ShoppingBookDAO();
+            if (item.getBook().getQuantity() == 0) {
+                importantCheck = false;
+                sbDAO.removeCartItem(item.getId());
+            } else if (item.getBook().getQuantity() < item.getQuantity()) {
+                importantCheck = false;
+                item.setQuantity(item.getBook().getQuantity());
+                sbDAO.update(item);
+            }
         }
 
-        // shopping -> set false : delete shopping
-        DiscountDAO discountDAO = new DiscountDAO();
-        discountDAO.setDiscountUsed(discount);
-        
-        shoppingDAO.deactivateShopping(currentShopping);
-        
-        request.getSession().removeAttribute("DISCOUNT");
-        
-        response.sendRedirect(URLConstants.CART_REQUEST);
+        if (!importantCheck) {
+            request.setAttribute("IMPORTANT_ERROR", "We apologize that there the books in your cart that are run out of, and have to update the maximum amounts of books that you can buy.");
+
+            Shopping userShoping = shoppingDAO.findShopping(user);
+
+            request.setAttribute("SHOPPING", userShoping);
+
+            RequestDispatcher rd = request.getRequestDispatcher(URLConstants.CART_PAGE);
+            rd.forward(request, response);
+        } else {
+            for (ShoppingBook item : currentShopping.getShoppingBookList()) {
+                CheckoutBook oneCheckoutBook = new CheckoutBook();
+                oneCheckoutBook.setCheckout(checkout);
+                oneCheckoutBook.setBook(item.getBook());
+                oneCheckoutBook.setPrice(item.getBook().getPrice());
+                oneCheckoutBook.setQuantity(item.getQuantity());
+
+                checkoutBookDAO.persist(oneCheckoutBook);
+                BookDAO bookDAO = new BookDAO();
+
+                item.getBook().setQuantity(item.getBook().getQuantity() - item.getQuantity());
+                bookDAO.update(item.getBook());
+            }
+
+            // shopping -> set false : delete shopping
+            DiscountDAO discountDAO = new DiscountDAO();
+            discountDAO.setDiscountUsed(discount);
+
+            shoppingDAO.deactivateShopping(currentShopping);
+
+            request.getSession().removeAttribute("DISCOUNT");
+            response.sendRedirect(URLConstants.CART_REQUEST);
+        }
+
     }
 
     @Override
